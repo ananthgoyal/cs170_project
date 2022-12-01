@@ -96,7 +96,7 @@ def score(G: nx.Graph, separated=False):
     k = np.max(teams)
     b = np.linalg.norm((counts / G.number_of_nodes()) - 1 / k, 2)
     C_w = sum(d for u, v, d in G.edges(data='weight') if output[u] == output[v])
-
+    print(C_w, k, b)
     if separated:
         return C_w, K_COEFFICIENT * math.exp(K_EXP * k), math.exp(B_EXP * b)
     return C_w + K_COEFFICIENT * math.exp(K_EXP * k) + math.exp(B_EXP * b)
@@ -124,8 +124,8 @@ def visualize(G: nx.Graph):
                            cmap=cm.get_cmap('tab20b'))
     nx.draw_networkx_labels(G, pos, font_size=10, font_color="white")
 
-    nx.draw_networkx_edges(G, pos, edgelist=crossing_edges, edge_color=[x[2] for x in crossing_edges],
-                           edge_cmap=cm.get_cmap('Blues'), edge_vmax=max_weight*1.5, edge_vmin=max_weight*-0.2)
+    #nx.draw_networkx_edges(G, pos, edgelist=crossing_edges, edge_color=[x[2] for x in crossing_edges],
+                           #edge_cmap=cm.get_cmap('Blues'), edge_vmax=max_weight*1.5, edge_vmin=max_weight*-0.2)
     nx.draw_networkx_edges(G, pos, width=2, edgelist=within_edges, edge_color=[x[2] for x in within_edges],
                            edge_cmap=cm.get_cmap('Reds'), edge_vmax=max_weight*1.5, edge_vmin=max_weight*-0.2)
 
@@ -135,6 +135,7 @@ def visualize(G: nx.Graph):
 
 
 def run(solver, in_file: str, out_file: str, overwrite: bool=False):
+    print(in_file)
     instance = read_input(in_file)
     output = solver(instance)
     if output:
@@ -142,6 +143,15 @@ def run(solver, in_file: str, out_file: str, overwrite: bool=False):
     write_output(instance, out_file, overwrite)
     print(f"{str(in_file)}: cost", score(instance))
 
+def run_vis(solver, in_file: str, out_file: str, overwrite: bool=False):
+    print(in_file)
+    instance = read_input(in_file)
+    output = solver(instance)
+    if output:
+        instance = output
+    visualize(output)
+    write_output(instance, out_file, overwrite)
+    print(f"{str(in_file)}: cost", score(instance))
 
 def run_all(solver, in_dir, out_dir, overwrite: bool=False):
     for file in tqdm([x for x in os.listdir(in_dir) if x.endswith('.in')]):
